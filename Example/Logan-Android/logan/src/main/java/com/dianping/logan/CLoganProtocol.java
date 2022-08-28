@@ -70,9 +70,9 @@ class CLoganProtocol implements LoganProtocolHandler {
      * @param max_file 最大文件值
      */
     private native int clogan_init(String cache_path, String dir_path, int max_file,
-            String encrypt_key_16, String encrypt_iv_16);
+            String encrypt_key_16, String encrypt_iv_16,int type);
 
-    private native int clogan_open(String file_name);
+    private native int clogan_open(String file_name,int type);
 
     private native void clogan_debug(boolean is_debug);
 
@@ -85,16 +85,16 @@ class CLoganProtocol implements LoganProtocolHandler {
      * @param is_main     是否主线程
      */
     private native int clogan_write(int flag, String log, long local_time, String thread_name,
-            long thread_id, int is_main);
+            long thread_id, int is_main,int type);
 
-    private native void clogan_flush();
+    private native void clogan_flush(int type);
 
     @Override
     public void logan_init(String cache_path, String dir_path, int max_file, String encrypt_key_16,
-            String encrypt_iv_16) {
-        if (mIsLoganInit) {
-            return;
-        }
+            String encrypt_iv_16,int type) {
+//        if (mIsLoganInit) {
+//            return;
+//        }
         if (!sIsCloganOk) {
             loganStatusCode(ConstantCode.CloganStatus.CLOGAN_LOAD_SO,
                     ConstantCode.CloganStatus.CLOGAN_LOAD_SO_FAIL);
@@ -102,7 +102,7 @@ class CLoganProtocol implements LoganProtocolHandler {
         }
 
         try {
-            int code = clogan_init(cache_path, dir_path, max_file, encrypt_key_16, encrypt_iv_16);
+            int code = clogan_init(cache_path, dir_path, max_file, encrypt_key_16, encrypt_iv_16,type);
             mIsLoganInit = true;
             loganStatusCode(ConstantCode.CloganStatus.CLGOAN_INIT_STATUS, code);
         } catch (UnsatisfiedLinkError e) {
@@ -130,12 +130,12 @@ class CLoganProtocol implements LoganProtocolHandler {
     }
 
     @Override
-    public void logan_open(String file_name) {
+    public void logan_open(String file_name,int type) {
         if (!mIsLoganInit || !sIsCloganOk) {
             return;
         }
         try {
-            int code = clogan_open(file_name);
+            int code = clogan_open(file_name,type);
             mIsLoganOpen = true;
             loganStatusCode(ConstantCode.CloganStatus.CLOGAN_OPEN_STATUS, code);
         } catch (UnsatisfiedLinkError e) {
@@ -146,12 +146,12 @@ class CLoganProtocol implements LoganProtocolHandler {
     }
 
     @Override
-    public void logan_flush() {
+    public void logan_flush(int type) {
         if (!mIsLoganOpen || !sIsCloganOk) {
             return;
         }
         try {
-            clogan_flush();
+            clogan_flush(type);
         } catch (UnsatisfiedLinkError e) {
             e.printStackTrace();
         }
@@ -160,14 +160,14 @@ class CLoganProtocol implements LoganProtocolHandler {
 
     @Override
     public void logan_write(int flag, String log, long local_time, String thread_name,
-            long thread_id, boolean is_main) {
+            long thread_id, boolean is_main,int type) {
         if (!mIsLoganOpen || !sIsCloganOk) {
             return;
         }
         try {
             int isMain = is_main ? 1 : 0;
             int code = clogan_write(flag, log, local_time, thread_name, thread_id,
-                    isMain);
+                    isMain,type);
             if (code != ConstantCode.CloganStatus.CLOGAN_WRITE_SUCCESS || Logan.sDebug) {
                 loganStatusCode(ConstantCode.CloganStatus.CLOGAN_WRITE_STATUS, code);
             }

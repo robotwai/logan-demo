@@ -34,11 +34,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.dianping.logan.Logan;
+import com.dianping.logan.LoganConfig;
+import com.dianping.logan.OnLoganProtocolStatus;
 import com.dianping.logan.SendLogCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -50,6 +53,9 @@ public class MainActivity extends Activity {
     private TextView mTvInfo;
     private EditText mEditIp;
     private RealSendLogRunnable mSendLogRunnable;
+    private static final String FILE_NAME = "logan_v1";
+
+    private static final String FILE_NAME2 = "logan_v2";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,19 +70,24 @@ public class MainActivity extends Activity {
         Button batchBtn = (Button) findViewById(R.id.write_batch_btn);
         Button sendBtn = (Button) findViewById(R.id.send_btn);
         Button logFileBtn = (Button) findViewById(R.id.show_log_file_btn);
+
+        Button initButton = (Button) findViewById(R.id.write_batch_int_btn);
+        Button init2Button = (Button) findViewById(R.id.write_batch_int2_btn);
+        Button init2Send = (Button) findViewById(R.id.write_batch_btn2);
+
         mTvInfo = (TextView) findViewById(R.id.info);
         mEditIp = (EditText) findViewById(R.id.send_ip);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Logan.w("啊哈哈哈哈66666", 2);
-            }
-        });
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Logan.w("啊哈哈哈哈66666", 2,);
+//            }
+//        });
         batchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loganTest();
+                loganTest(0);
             }
         });
         sendBtn.setOnClickListener(new View.OnClickListener() {
@@ -97,9 +108,66 @@ public class MainActivity extends Activity {
                 loganSendByDefault();
             }
         });
+        initButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loganInit(0);
+            }
+        } );
+        init2Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loganInit(1);
+            }
+        } );
+        init2Send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loganTest(1);
+            }
+        } );
     }
 
-    private void loganTest() {
+    private void loganInit(final int type) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                try {
+                    String s = "";
+                    if(type == 0){
+                        s = FILE_NAME;
+                    }else {
+                        s = FILE_NAME2;
+                    }
+                    LoganConfig config = new LoganConfig.Builder()
+                            .setCachePath(getApplicationContext().getFilesDir().getAbsolutePath()+ File.separator +FILE_NAME)
+                            .setPath(getApplicationContext().getFilesDir().getAbsolutePath()
+                                    + File.separator +FILE_NAME)
+                            .setCachePath1(getApplicationContext().getFilesDir().getAbsolutePath()+ File.separator +FILE_NAME2)
+                            .setPath1(getApplicationContext().getFilesDir().getAbsolutePath()
+                                    + File.separator +FILE_NAME2)
+                            .setEncryptKey16("0123456789012345".getBytes())
+                            .setEncryptIV16("0123456789012345".getBytes())
+                            .setType(type)
+                            .build();
+                    Logan.init(config);
+                    Logan.setDebug(true);
+                    Logan.setOnLoganProtocolStatus(new OnLoganProtocolStatus() {
+                        @Override
+                        public void loganProtocolStatus(String cmd, int code) {
+                            Log.d(TAG, "clogan > cmd : " + cmd + " | " + "code : " + code);
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
+
+    private void loganTest(final int type) {
         new Thread() {
             @Override
             public void run() {
@@ -107,9 +175,10 @@ public class MainActivity extends Activity {
                 try {
                     for (int i = 0; i < 9; i++) {
                         Log.d(TAG, "times : " + i);
-                        Logan.w(String.valueOf(i), 1);
+                        Logan.w(String.valueOf(i), 1,type);
                         Thread.sleep(5);
                     }
+                    Logan.f(type);
                     Log.d(TAG, "write log end");
                 } catch (InterruptedException e) {
                     e.printStackTrace();

@@ -32,6 +32,8 @@ class SendAction {
 
     SendLogRunnable sendLogRunnable;
 
+    int type ;
+
     boolean isValid() {
         boolean valid = false;
         if (sendLogRunnable != null) {

@@ -34,6 +34,8 @@ class LoganModel {
 
     SendAction sendAction;
 
+    int type;
+
     boolean isValid() {
         boolean valid = false;
         if (action != null) {

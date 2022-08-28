@@ -44,21 +44,21 @@ public class Logan {
      * @param type 表示日志类型
      * @brief Logan写入日志
      */
-    public static void w(String log, int type) {
+    public static void w(String log, int flag,int type) {
         if (sLoganControlCenter == null) {
             throw new RuntimeException("Please initialize Logan first");
         }
-        sLoganControlCenter.write(log, type);
+        sLoganControlCenter.write(log, flag,type);
     }
 
     /**
      * @brief 立即写入日志文件
      */
-    public static void f() {
+    public static void f(int type) {
         if (sLoganControlCenter == null) {
             throw new RuntimeException("Please initialize Logan first");
         }
-        sLoganControlCenter.flush();
+        sLoganControlCenter.flush(type);
     }
 
     /**

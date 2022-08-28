@@ -38,6 +38,8 @@ class WriteAction {
 
     int flag;
 
+    int type;
+
     boolean isValid() {
         boolean valid = false;
         if (!TextUtils.isEmpty(log)) {

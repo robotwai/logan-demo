@@ -48,31 +48,40 @@ class LoganThread extends Thread {
     private volatile boolean mIsRun = true;
 
     private long mCurrentDay;
+    private long mCurrentDay2;
     private volatile boolean mIsWorking;
     private File mFileDirectory;
     private boolean mIsSDCard;
     private long mLastTime;
     private LoganProtocol mLoganProtocol;
     private ConcurrentLinkedQueue<LoganModel> mCacheLogQueue;
-    private String mCachePath; // 缓存文件路径
+    private String mCachePath; // 缓存文件mCachePath路径
     private String mPath; //文件路径
+
+    private String mCachePath1; // 缓存文件路径
+    private String mPath1; //文件路径
     private long mSaveTime; //存储时间
     private long mMaxLogFile;//最大文件大小
     private long mMinSDCard;
     private String mEncryptKey16;
     private String mEncryptIv16;
     private int mSendLogStatusCode;
+
+    boolean InitType1  =false;
     // 发送缓存队列
     private ConcurrentLinkedQueue<LoganModel> mCacheSendQueue = new ConcurrentLinkedQueue<>();
     private ExecutorService mSingleThreadExecutor;
 
     LoganThread(
             ConcurrentLinkedQueue<LoganModel> cacheLogQueue, String cachePath,
-            String path, long saveTime, long maxLogFile, long minSDCard, String encryptKey16,
+            String path,String cachePath1,
+            String path1, long saveTime, long maxLogFile, long minSDCard, String encryptKey16,
             String encryptIv16) {
         mCacheLogQueue = cacheLogQueue;
         mCachePath = cachePath;
         mPath = path;
+        mCachePath1 = cachePath1;
+        mPath1 = path1;
         mSaveTime = saveTime;
         mMaxLogFile = maxLogFile;
         mMinSDCard = minSDCard;
@@ -133,8 +142,14 @@ class LoganThread extends Thread {
                 }
             });
             mLoganProtocol.logan_init(mCachePath, mPath, (int) mMaxLogFile, mEncryptKey16,
-                    mEncryptIv16);
+                    mEncryptIv16,model.type);
             mLoganProtocol.logan_debug(Logan.sDebug);
+        }else{
+            if(model.type ==1 && !InitType1){
+                mLoganProtocol.logan_init(mCachePath1, mPath1, (int) mMaxLogFile, mEncryptKey16,
+                        mEncryptIv16,model.type);
+                InitType1 = true;
+            }
         }
 
         if (model.action == LoganModel.Action.WRITE) {
@@ -151,22 +166,22 @@ class LoganThread extends Thread {
                 }
             }
         } else if (model.action == LoganModel.Action.FLUSH) {
-            doFlushLog2File();
+            doFlushLog2File(model.type);
         }
     }
 
-    private void doFlushLog2File() {
+    private void doFlushLog2File(int type) {
         if (Logan.sDebug) {
             Log.d(TAG, "Logan flush start");
         }
         if (mLoganProtocol != null) {
-            mLoganProtocol.logan_flush();
+            mLoganProtocol.logan_flush(type);
         }
     }
 
-    private boolean isDay() {
+    private boolean isDay(long time) {
         long currentTime = System.currentTimeMillis();
-        return mCurrentDay < currentTime && mCurrentDay + LONG > currentTime;
+        return time < currentTime && time + LONG > currentTime;
     }
 
     private void deleteExpiredFile(long deleteTime) {
@@ -202,13 +217,20 @@ class LoganThread extends Thread {
             mFileDirectory = new File(mPath);
         }
 
-        if (!isDay()) {
+        if (!isDay(mCurrentDay)) {
             long tempCurrentDay = Util.getCurrentTime();
             //save时间
             long deleteTime = tempCurrentDay - mSaveTime;
             deleteExpiredFile(deleteTime);
             mCurrentDay = tempCurrentDay;
-            mLoganProtocol.logan_open(String.valueOf(mCurrentDay));
+            mLoganProtocol.logan_open(String.valueOf(mCurrentDay),action.type);
+        }else if(!isDay(mCurrentDay2)&&action.type==1){
+            long tempCurrentDay = Util.getCurrentTime();
+            //save时间
+            long deleteTime = tempCurrentDay - mSaveTime;
+            deleteExpiredFile(deleteTime);
+            mCurrentDay2 = tempCurrentDay;
+            mLoganProtocol.logan_open(String.valueOf(mCurrentDay2),action.type);
         }
 
         long currentTime = System.currentTimeMillis(); //每隔1分钟判断一次
@@ -221,7 +243,7 @@ class LoganThread extends Thread {
             return;
         }
         mLoganProtocol.logan_write(action.flag, action.log, action.localTime, action.threadName,
-                action.threadId, action.isMainThread);
+                action.threadId, action.isMainThread,action.type);
     }
 
     private void doSendLog2Net(SendAction action) {
@@ -284,7 +306,7 @@ class LoganThread extends Thread {
         if (isFile(action.date)) { //是否有日期文件
             String src = mPath + File.separator + action.date;
             if (action.date.equals(String.valueOf(Util.getCurrentTime()))) {
-                doFlushLog2File();
+                doFlushLog2File(action.type);
                 String des = mPath + File.separator + action.date + ".copy";
                 if (copyFile(src, des)) {
                     action.uploadPath = des;

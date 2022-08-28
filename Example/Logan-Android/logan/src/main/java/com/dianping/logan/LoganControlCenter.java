@@ -37,6 +37,8 @@ class LoganControlCenter {
     private ConcurrentLinkedQueue<LoganModel> mCacheLogQueue = new ConcurrentLinkedQueue<>();
     private String mCachePath; // 缓存文件路径
     private String mPath; //文件路径
+    private String mCachePath1; // 缓存文件路径
+    private String mPath1; //文件路径
     private long mSaveTime; //存储时间
     private long mMaxLogFile;//最大文件大小
     private long mMinSDCard;
@@ -53,6 +55,8 @@ class LoganControlCenter {
 
         mPath = config.mPathPath;
         mCachePath = config.mCachePath;
+        mPath1 = config.mPath1;
+        mCachePath1 = config.mCachePath1;
         mSaveTime = config.mDay;
         mMinSDCard = config.mMinSDCard;
         mMaxLogFile = config.mMaxFile;
@@ -65,7 +69,7 @@ class LoganControlCenter {
 
     private void init() {
         if (mLoganThread == null) {
-            mLoganThread = new LoganThread(mCacheLogQueue, mCachePath, mPath, mSaveTime,
+            mLoganThread = new LoganThread(mCacheLogQueue, mCachePath, mPath,mCachePath1,mPath1, mSaveTime,
                     mMaxLogFile, mMinSDCard, mEncryptKey16, mEncryptIv16);
             mLoganThread.setName("logan-thread");
             mLoganThread.start();
@@ -83,12 +87,13 @@ class LoganControlCenter {
         return sLoganControlCenter;
     }
 
-    void write(String log, int flag) {
+    void write(String log, int flag,int type) {
         if (TextUtils.isEmpty(log)) {
             return;
         }
         LoganModel model = new LoganModel();
         model.action = LoganModel.Action.WRITE;
+        model.type = type;
         WriteAction action = new WriteAction();
         String threadName = Thread.currentThread().getName();
         long threadLog = Thread.currentThread().getId();
@@ -102,6 +107,7 @@ class LoganControlCenter {
         action.isMainThread = isMain;
         action.threadId = threadLog;
         action.threadName = threadName;
+        action.type = type;
         model.writeAction = action;
         if (mCacheLogQueue.size() < mMaxQueue) {
             mCacheLogQueue.add(model);
@@ -135,12 +141,13 @@ class LoganControlCenter {
         }
     }
 
-    void flush() {
+    void flush(int type) {
         if (TextUtils.isEmpty(mPath)) {
             return;
         }
         LoganModel model = new LoganModel();
         model.action = LoganModel.Action.FLUSH;
+        model.type = type;
         mCacheLogQueue.add(model);
         if (mLoganThread != null) {
             mLoganThread.notifyRun();

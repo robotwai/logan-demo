@@ -37,7 +37,7 @@ JNIEXPORT jint JNICALL
 Java_com_dianping_logan_CLoganProtocol_clogan_1write(JNIEnv *env, jobject instance,
                                                           jint flag, jstring log_,
                                                           jlong local_time, jstring thread_name_,
-                                                          jlong thread_id, jint ismain);
+                                                          jlong thread_id, jint ismain,jint type);
 /**
  * JNI init interface
  */
@@ -46,20 +46,20 @@ Java_com_dianping_logan_CLoganProtocol_clogan_1init(JNIEnv *env, jobject instanc
                                                          jstring cache_path_,
                                                          jstring dir_path_, jint max_file,
                                                          jstring encrypt_key16_,
-                                                         jstring encrypt_iv16_);
+                                                         jstring encrypt_iv16_,jint type);
 
 /**
  * JNI open interface
  */
 JNIEXPORT jint JNICALL
 Java_com_dianping_logan_CLoganProtocol_clogan_1open(JNIEnv *env, jobject instance,
-                                                         jstring file_name_);
+                                                         jstring file_name_,jint type);
 
 /**
  * JNI flush interface
  */
 JNIEXPORT void JNICALL
-Java_com_dianping_logan_CLoganProtocol_clogan_1flush(JNIEnv *env, jobject instance);
+Java_com_dianping_logan_CLoganProtocol_clogan_1flush(JNIEnv *env, jobject instance,jint type);
 
 /**
  * JNI debug interface

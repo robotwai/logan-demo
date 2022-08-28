@@ -34,7 +34,6 @@
 
 #define LOGAN_CACHE_DIR "logan_cache"
 #define LOGAN_CACHE_FILE "logan.mmap2"
-
 #define LOGAN_MMAP_HEADER_PROTOCOL '\15' //MMAP的头文件标识符
 #define LOGAN_MMAP_TAIL_PROTOCOL '\16' //MMAP尾文件标识符
 #define LOGAN_MMAP_TOTALLEN  3 //MMAP文件长度
@@ -87,6 +86,6 @@ typedef struct logan_model_struct {
     unsigned char aes_iv[16]; //aes_iv
     int is_ok;
 
-} cLogan_model;
+} cLogan_model,cLogan_model1;
 
 #endif //CLOGAN_LOGAN_CONFIG_H

@@ -26,11 +26,12 @@ JNIEXPORT jint JNICALL
 Java_com_dianping_logan_CLoganProtocol_clogan_1write(JNIEnv *env, jobject instance, jint flag,
                                                      jstring log_, jlong local_time,
                                                      jstring thread_name_, jlong thread_id,
-                                                     jint is_main) {
+                                                     jint is_main,
+                                                     jint type) {
     const char *log = (*env)->GetStringUTFChars(env, log_, 0);
     const char *thread_name = (*env)->GetStringUTFChars(env, thread_name_, 0);
 
-    jint code = (jint) clogan_write(flag, log, local_time, thread_name, thread_id, is_main);
+    jint code = (jint) clogan_write(flag, log, local_time, thread_name, thread_id, is_main,type);
 
     (*env)->ReleaseStringUTFChars(env, log_, log);
     (*env)->ReleaseStringUTFChars(env, thread_name_, thread_name);
@@ -42,13 +43,14 @@ JNIEXPORT jint JNICALL
 Java_com_dianping_logan_CLoganProtocol_clogan_1init(JNIEnv *env, jobject instance,
                                                     jstring cache_path_,
                                                     jstring dir_path_, jint max_file,
-                                                    jstring encrypt_key16_, jstring encrypt_iv16_) {
+                                                    jstring encrypt_key16_, jstring encrypt_iv16_,
+                                                    jint type) {
     const char *dir_path = (*env)->GetStringUTFChars(env, dir_path_, 0);
     const char *cache_path = (*env)->GetStringUTFChars(env, cache_path_, 0);
     const char *encrypt_key16 = (*env)->GetStringUTFChars(env, encrypt_key16_, 0);
     const char *encrypt_iv16 = (*env)->GetStringUTFChars(env, encrypt_iv16_, 0);
 
-    jint code = (jint) clogan_init(cache_path, dir_path, max_file, encrypt_key16, encrypt_iv16);
+    jint code = (jint) clogan_init(cache_path, dir_path, max_file, encrypt_key16, encrypt_iv16, type);
 
     (*env)->ReleaseStringUTFChars(env, dir_path_, dir_path);
     (*env)->ReleaseStringUTFChars(env, cache_path_, cache_path);
@@ -59,18 +61,18 @@ Java_com_dianping_logan_CLoganProtocol_clogan_1init(JNIEnv *env, jobject instanc
 
 JNIEXPORT jint JNICALL
 Java_com_dianping_logan_CLoganProtocol_clogan_1open(JNIEnv *env, jobject instance,
-                                                    jstring file_name_) {
+                                                    jstring file_name_,jint type) {
     const char *file_name = (*env)->GetStringUTFChars(env, file_name_, 0);
 
-    jint code = (jint) clogan_open(file_name);
+    jint code = (jint) clogan_open(file_name,type);
 
     (*env)->ReleaseStringUTFChars(env, file_name_, file_name);
     return code;
 }
 
 JNIEXPORT void JNICALL
-Java_com_dianping_logan_CLoganProtocol_clogan_1flush(JNIEnv *env, jobject instance) {
-    clogan_flush();
+Java_com_dianping_logan_CLoganProtocol_clogan_1flush(JNIEnv *env, jobject instance,jint type) {
+    clogan_flush(type);
 }
 
 JNIEXPORT void JNICALL

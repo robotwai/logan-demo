@@ -35,7 +35,8 @@ public class LoganConfig {
 
     String mCachePath; //mmap缓存路径
     String mPathPath; //file文件路径
-
+    String mCachePath1; // 缓存文件路径
+    String mPath1; //文件路径
     long mMaxFile = DEFAULT_FILE_SIZE; //删除文件最大值
     long mDay = DEFAULT_DAY; //删除天数
     long mMaxQueue = DEFAULT_QUEUE;
@@ -43,6 +44,8 @@ public class LoganConfig {
 
     byte[] mEncryptKey16; //128位aes加密Key
     byte[] mEncryptIv16; //128位aes加密IV
+
+    int type;
 
     boolean isValid() {
         boolean valid = false;
@@ -61,10 +64,21 @@ public class LoganConfig {
         mCachePath = cachePath;
     }
 
+    private void setType(int t) {
+        type = t;
+    }
+
     private void setPathPath(String pathPath) {
         mPathPath = pathPath;
     }
+    private void setCachePath1(String cachePath) {
+        mCachePath1 = cachePath;
+    }
 
+
+    private void setPathPath1(String pathPath) {
+        mPath1 = pathPath;
+    }
     private void setMaxFile(long maxFile) {
         mMaxFile = maxFile;
     }
@@ -93,7 +107,9 @@ public class LoganConfig {
         byte[] mEncryptKey16; //128位ase加密Key
         byte[] mEncryptIv16; //128位aes加密IV
         long mMinSDCard = DEFAULT_MIN_SDCARD_SIZE;
-
+        int type;
+        private String mCachePath1; // 缓存文件路径
+        private String mPath1; //文件路径
         public Builder setCachePath(String cachePath) {
             mCachePath = cachePath;
             return this;
@@ -101,6 +117,16 @@ public class LoganConfig {
 
         public Builder setPath(String path) {
             mPath = path;
+            return this;
+        }
+
+        public Builder setCachePath1(String cachePath1) {
+            mCachePath1 = cachePath1;
+            return this;
+        }
+
+        public Builder setPath1(String path1) {
+            mPath1 = path1;
             return this;
         }
 
@@ -129,15 +155,23 @@ public class LoganConfig {
             return this;
         }
 
+        public Builder setType(int type) {
+            this.type = type;
+            return this;
+        }
+
         public LoganConfig build() {
             LoganConfig config = new LoganConfig();
             config.setCachePath(mCachePath);
             config.setPathPath(mPath);
+            config.setCachePath1(mCachePath1);
+            config.setPathPath1(mPath1);
             config.setMaxFile(mMaxFile);
             config.setMinSDCard(mMinSDCard);
             config.setDay(mDay);
             config.setEncryptKey16(mEncryptKey16);
             config.setEncryptIV16(mEncryptIv16);
+            config.setType(type);
             return config;
         }
     }

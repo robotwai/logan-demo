@@ -5,15 +5,40 @@
     android:background="@android:color/white"
     android:orientation="vertical">
 
+
+    <Button
+        android:id="@+id/write_batch_int_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@android:color/background_dark"
+        android:text="测试logan初始化"
+        android:textColor="@android:color/white" />
+    <Button
+        android:id="@+id/write_batch_int2_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@android:color/background_dark"
+        android:text="测试logan初始化2"
+        android:textColor="@android:color/white" />
+
     <Button
         android:id="@+id/write_batch_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:background="@android:color/background_dark"
-        android:text="测试Logan批量写入"
+        android:text="测试Logan1批量写入"
         android:textColor="@android:color/white" />
-
+    <Button
+        android:id="@+id/write_batch_btn2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@android:color/background_dark"
+        android:text="测试Logan2批量写入"
+        android:textColor="@android:color/white" />
     <Button
         android:id="@+id/write_btn"
         android:layout_width="wrap_content"

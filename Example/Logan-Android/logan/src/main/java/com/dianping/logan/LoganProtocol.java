@@ -28,6 +28,7 @@ class LoganProtocol implements LoganProtocolHandler {
 
     private LoganProtocolHandler mCurProtocol;
     private boolean mIsInit;
+    private boolean mIsInit2;
     private OnLoganProtocolStatus mLoganProtocolStatus;
 
     private LoganProtocol() {
@@ -44,38 +45,47 @@ class LoganProtocol implements LoganProtocolHandler {
     }
 
     @Override
-    public void logan_flush() {
+    public void logan_flush(int type) {
         if (mCurProtocol != null) {
-            mCurProtocol.logan_flush();
+            mCurProtocol.logan_flush(type);
         }
     }
 
     @Override
     public void logan_write(int flag, String log, long local_time, String thread_name,
-            long thread_id, boolean is_main) {
+            long thread_id, boolean is_main,int type) {
         if (mCurProtocol != null) {
             mCurProtocol.logan_write(flag, log, local_time, thread_name, thread_id,
-                    is_main);
+                    is_main,type);
         }
     }
 
     @Override
-    public void logan_open(String file_name) {
+    public void logan_open(String file_name,int type) {
         if (mCurProtocol != null) {
-            mCurProtocol.logan_open(file_name);
+            mCurProtocol.logan_open(file_name,type);
+        }else {
+            if(type == 1){
+                mCurProtocol.logan_open(file_name,type);
+            }
         }
     }
 
     @Override
     public void logan_init(String cache_path, String dir_path, int max_file, String encrypt_key_16,
-            String encrypt_iv_16) {
-        if (mIsInit) {
+            String encrypt_iv_16,int type) {
+        if (mIsInit && mIsInit2) {
             return;
+        }
+
+        if(type==1 && !mIsInit2){
+            mCurProtocol.logan_init(cache_path, dir_path, max_file, encrypt_key_16, encrypt_iv_16, type);
+            mIsInit2 = true;
         }
         if (CLoganProtocol.isCloganSuccess()) {
             mCurProtocol = CLoganProtocol.newInstance();
             mCurProtocol.setOnLoganProtocolStatus(mLoganProtocolStatus);
-            mCurProtocol.logan_init(cache_path, dir_path, max_file, encrypt_key_16, encrypt_iv_16);
+            mCurProtocol.logan_init(cache_path, dir_path, max_file, encrypt_key_16, encrypt_iv_16, type);
             mIsInit = true;
         } else {
             mCurProtocol = null;

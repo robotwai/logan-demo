@@ -17,10 +17,10 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        initLogan();
-        Logan.w("MyApplication onCreate", 3);
-        Logan.w("MyApplication onCreate", 3);
-        Logan.w("MyApplication onCreate", 3);
+//        initLogan();
+//        Logan.w("MyApplication onCreate", 3);
+//        Logan.w("MyApplication onCreate", 3);
+//        Logan.w("MyApplication onCreate", 3);
     }
 
     private void initLogan() {

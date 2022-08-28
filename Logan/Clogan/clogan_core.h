@@ -54,13 +54,13 @@ extern "C"
  */
 int
 clogan_init(const char *cache_dirs, const char *path_dirs, int max_file, const char *encrypt_key16,
-            const char *encrypt_iv16);
+            const char *encrypt_iv16,int type);
 
 /**
  @brief 打开一个文件的写入
  @param pathname  文件名称
  */
-int clogan_open(const char *pathname); //打开一个文件的写入
+int clogan_open(const char *pathname,int type); //打开一个文件的写入
 
 /**
  @brief 写入数据 按照顺序和类型传值(强调、强调、强调)
@@ -73,12 +73,12 @@ int clogan_open(const char *pathname); //打开一个文件的写入
  */
 int
 clogan_write(int flag, char *log, long long local_time, char *thread_name, long long thread_id,
-             int is_main);
+             int is_main,int type);
 
 /**
  @brief 强制写入文件。建议在崩溃或者退出程序的时候调用
  */
-int clogan_flush(void);
+int clogan_flush(int type);
 
 /**
  @brief 是否为debug环境。debug环境将输出过程日志到控制台中
